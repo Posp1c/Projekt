@@ -1,0 +1,56 @@
+int btnPins[] = {2, 3, 4, 5};
+int btnPress[] = {LOW, LOW, LOW, LOW};
+int btnState[] = {LOW, LOW, LOW, LOW};
+
+int pumpPins[] = {6, 7, 8, 9};
+int pumpStatus[] = {LOW, LOW, LOW, LOW};
+
+int cudlik = 0;
+int cas = 100;
+
+void setup() {
+  for (int i = 0; i < 4; i++) {
+    pinMode(btnPins[i], INPUT);
+    pinMode(pumpPins[i], OUTPUT);
+  }
+}
+
+void loop() {
+  for (int i = 0; i < 4; i++) {
+    btnPress[i] = digitalRead(btnPins[i]);
+    
+    if (btnPress[i] == HIGH && btnState[i] == HIGH) {
+      cudlik = i + 1;
+      btnState[i] = LOW;
+    }
+    else if (btnPress[i] == HIGH && btnState[i] == LOW) {
+      delay(10);
+      btnState[i] = HIGH;
+    }
+  }
+
+  switch (cudlik) {
+    case 0:
+      for (int i = 0; i < 4; i++) {
+        pumpStatus[i] = LOW;
+      }
+      break;
+
+    case 1 ... 4:
+      pumpStatus[cudlik - 1] = HIGH;
+      pumpuj();
+      pumpStatus[cudlik - 1] = LOW;
+      cudlik = 0;
+      break;
+  }
+}
+
+void pumpuj() {
+  for (int i = 0; i < 4; i++) {
+    if (pumpStatus[i] == HIGH) {
+      digitalWrite(pumpPins[i], HIGH);
+      delay(cas);
+      digitalWrite(pumpPins[i], LOW);
+    }
+  }
+}
